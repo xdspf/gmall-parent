@@ -9,7 +9,8 @@
         <module>model</module>
         <module>server-gateway</module>
     </modules>
-<!--明天休息-->
+
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
