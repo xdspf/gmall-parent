@@ -9,8 +9,6 @@
         <module>model</module>
         <module>server-gateway</module>
     </modules>
-    <!--leishen-->
-
 
     <parent>
         <groupId>org.springframework.boot</groupId>
