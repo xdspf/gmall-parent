@@ -18,5 +18,6 @@ public interface BaseCategory2Service extends IService<BaseCategory2> {
      * @param c1Id
      * @return
      */
-    List<BaseCategory2> getCategoryChild(Long c1Id);
+
+    List<BaseCategory2> getCategory1Child(Long c1Id);
 }

@@ -26,7 +26,7 @@ public class BaseCategory2ServiceImpl extends ServiceImpl<BaseCategory2Mapper, B
     BaseCategory2Mapper baseCategory2Mapper;
 
     @Override
-    public List<BaseCategory2> getCategoryChild(Long c1Id) {
+    public List<BaseCategory2> getCategory1Child(Long c1Id) {
 
         QueryWrapper<BaseCategory2> querywrapper = new QueryWrapper<>();
         querywrapper.eq("category1_id",c1Id);

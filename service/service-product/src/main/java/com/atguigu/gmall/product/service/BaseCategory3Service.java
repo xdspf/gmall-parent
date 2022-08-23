@@ -13,5 +13,6 @@ import java.util.List;
 */
 public interface BaseCategory3Service extends IService<BaseCategory3> {
 
-    List<BaseCategory3> getCategoryChild(Long c2Id);
+
+    List<BaseCategory3> getCategory2Child(Long c2Id);
 }

@@ -60,15 +60,20 @@ public class CategoryController {
     @GetMapping("/getCategory2/{c1Id}")
     public Result getCategory2(@PathVariable("c1Id") Long c1Id) {
 
-        List<BaseCategory2> category2 = baseCategory2Service.getCategoryChild(c1Id);
+        List<BaseCategory2> category2 = baseCategory2Service.getCategory1Child(c1Id);
 
         return Result.ok(category2);
     }
 
+    /**
+     * 获取二级分类下的三级分类
+     * @param c2Id
+     * @return
+     */
     @GetMapping("/getCategory3/{c2Id}")
     public Result getCategory3(@PathVariable("c2Id") Long c2Id) {
 
-        List<BaseCategory3> category3 = baseCategory3Service.getCategoryChild(c2Id);
+        List<BaseCategory3> category3 = baseCategory3Service.getCategory2Child(c2Id);
 
         return Result.ok(category3);
     }
