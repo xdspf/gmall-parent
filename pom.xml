@@ -9,6 +9,7 @@
         <module>model</module>
         <module>server-gateway</module>
     </modules>
+    <!--今天周二-->
 
     <parent>
         <groupId>org.springframework.boot</groupId>
