@@ -52,7 +52,6 @@ public class CategoryController {
         return Result.ok(list);
     }
 
-
     /*
     获取某个一级分类下的所有二级分类
      */
