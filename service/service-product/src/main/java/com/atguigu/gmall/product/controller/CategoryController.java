@@ -11,6 +11,7 @@ import com.atguigu.gmall.product.service.BaseCategory3Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -25,6 +26,7 @@ import java.util.List;
 //@ResponseBody   所有的响应数据都直接写给浏览器（如果是对象写成json，如果是文本就写成普通字符串）
 //@Controller 这个类是来接受请求的
 @RestController
+@RequestMapping("/admin/product")
 public class CategoryController {
 
     @Autowired
@@ -42,7 +44,7 @@ public class CategoryController {
     查询所有的一级分类
      */
 
-    @GetMapping("/admin/product/getCategory1")
+    @GetMapping("/getCategory1")
     public Result getCategory1() {
 
         List<BaseCategory1> list = baseCategory1Service.list();
@@ -56,7 +58,7 @@ public class CategoryController {
      */
 
     //  admin/product/getCategory2/id
-    @GetMapping("admin/product/getCategory2/{c1Id}")
+    @GetMapping("/getCategory2/{c1Id}")
     public Result getCategory2(@PathVariable("c1Id") Long c1Id) {
 
         List<BaseCategory2> category2 = baseCategory2Service.getCategoryChild(c1Id);
@@ -64,7 +66,7 @@ public class CategoryController {
         return Result.ok(category2);
     }
 
-    @GetMapping("admin/product/getCategory3/{c2Id}")
+    @GetMapping("/getCategory3/{c2Id}")
     public Result getCategory3(@PathVariable("c2Id") Long c2Id) {
 
         List<BaseCategory3> category3 = baseCategory3Service.getCategoryChild(c2Id);
