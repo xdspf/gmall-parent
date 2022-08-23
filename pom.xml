@@ -7,6 +7,7 @@
         <module>common</module>
         <module>service</module>
         <module>model</module>
+        <module>server-gateway</module>
     </modules>
 
     <parent>
@@ -21,13 +22,11 @@
 
     <packaging>pom</packaging>
 
-<!--    <properties>-->
-<!--        <maven.compiler.source>8</maven.compiler.source>-->
-<!--        <maven.compiler.target>8</maven.compiler.target>-->
-<!--    </properties>-->
 
     <!--定义jar包的版本号-->
     <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
         <java.version>1.8</java.version>
         <cloud.version>Hoxton.SR8</cloud.version>
         <alibaba.version>2.2.5.RELEASE</alibaba.version>
@@ -38,6 +37,8 @@
         <fastdfs.version>1.27.0.0</fastdfs.version>
         <lombok.version>1.18.10</lombok.version>
     </properties>
+
+
 
     <!--配置dependencyManagement锁定依赖的版本 并不是实际的依赖。-->
     <dependencyManagement>

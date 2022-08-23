@@ -26,6 +26,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+<!--            打包的时候不带我自己引入的这个-->
             <scope>provided </scope>
         </dependency>
 

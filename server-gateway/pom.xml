@@ -8,15 +8,9 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
+    <description>网关，所有请求都先通过它</description>
 
-    <packaging>pom</packaging>
-    <modules>
-        <module>service-product</module>
-    </modules>
-
-
-    <artifactId>service</artifactId>
-    <version>1.0</version>
+    <artifactId>server-gateway</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -24,36 +18,12 @@
     </properties>
 
     <dependencies>
-        <!--依赖服务的工具类-->
         <dependency>
             <groupId>com.atguigu.gmall</groupId>
-            <artifactId>service-util</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <!--数据载体-->
-        <dependency>
-            <groupId>com.atguigu.gmall</groupId>
-            <artifactId>model</artifactId>
+            <artifactId>common-util</artifactId>
             <version>1.0</version>
         </dependency>
 
-        <!--web 需要启动项目-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
-        <!--mybatis-plus-->
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-boot-starter</artifactId>
-        </dependency>
-
-        <!--mysql-->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-        </dependency>
 
         <!-- 服务注册 -->
         <dependency>
@@ -66,13 +36,7 @@
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
         </dependency>
 
-        <!-- 服务调用feign -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-openfeign</artifactId>
-        </dependency>
-
-        <!-- 流量控制:sentinel -->
+        <!-- 流量控制、熔断降级 -->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
@@ -89,6 +53,12 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-zipkin</artifactId>
+        </dependency>
+
+        <!--      网关：  spring-cloud-starter-gateway-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-gateway</artifactId>
         </dependency>
 
     </dependencies>
