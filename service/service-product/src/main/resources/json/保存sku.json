@@ -1,0 +1,79 @@
+{
+  //存放到sku_info表中
+  "id": null,
+  "spuId": 29,
+  "price": "2999",
+  "skuName": "荣耀30 50倍远摄 麒麟985 5G 4000万超广角AI四摄 美颜自拍全网通5G版 荣耀30【钛空银】 全网通(8GB+128GB)",
+  "weight": "0.32",
+  "skuDesc": "品牌： 荣耀（HONOR）\n商品名称：荣耀（HONOR）荣耀30商品编号：69742310744商品毛重：0.55kg商品产地：中国大陆CPU型号：麒麟700系列运行内存：6GB三防标准：不支持防水屏幕分辨率：HD+屏幕材质：OLED直屏后摄主像素：4800万像素机身内存：128GB",
+  "category3Id": 61,
+  "skuDefaultImg": "http://192.168.200.100:9000/gmall/2022-08-26/7aaf88639a5348cba3df0b709d0b5980-1.png",
+  "tmId": 2,
+
+  //平台属性名和值保存到sku_attr_value表中
+  "skuAttrValueList": [
+    {
+      "attrId": "1",
+      "valueId": "5"
+    },
+    {
+      "attrId": "2",
+      "valueId": "13"
+    },
+    {
+      "attrId": "3",
+      "valueId": "19"
+    },
+    {
+      "attrId": "4",
+      "valueId": "27"
+    },
+    {
+      "attrId": "5",
+      "valueId": "36"
+    },
+    {
+      "attrId": "13",
+      "valueId": "70"
+    }
+  ],
+
+  //销售属性值和名保存到sku_sale_attr_value表中
+  "skuSaleAttrValueList": [
+    {
+      "saleAttrValueId": "124",
+      "saleAttrValueName": "幻夜黑",
+      "baseSaleAttrId": "1",
+      "saleAttrName": "选择颜色"
+    },
+    {
+      "saleAttrValueId": "126",
+      "saleAttrValueName": "128G",
+      "baseSaleAttrId": "2",
+      "saleAttrName": "选择版本"
+    }
+  ],
+
+  //图片保存到sku_image中
+  "skuImageList": [
+    {
+      "spuImgId": 285,
+      "imgName": "4.png",
+      "imgUrl": "http://192.168.200.100:9000/gmall/2022-08-26/86946081449d4af99289472dd0faf3f5-4.png",
+      "isDefault": 0
+    },
+    {
+      "spuImgId": 286,
+      "imgName": "1.png",
+      "imgUrl": "http://192.168.200.100:9000/gmall/2022-08-26/7aaf88639a5348cba3df0b709d0b5980-1.png",
+      "isDefault": 1
+    },
+    {
+      "spuImgId": 287,
+      "imgName": "3.png",
+      "imgUrl": "http://192.168.200.100:9000/gmall/2022-08-26/48fdfb5d6ab949039b48af657fb059c3-3.png",
+      "isDefault": 0
+    }
+  ]
+
+}

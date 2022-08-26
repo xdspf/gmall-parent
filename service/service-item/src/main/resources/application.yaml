@@ -1,0 +1,6 @@
+server:
+  port: 9002
+
+spring:
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration  #排除数据源

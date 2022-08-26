@@ -1,0 +1,77 @@
+{
+  "id": null,
+  "spuName": "华为/HUAWEI P50 Pro",
+  "description": "品牌： 华为（HUAWEI）\n商品名称：华为P50系列商品编号：100030561172商品毛重：350.00g商品产地：中国大陆CPU型号：骁龙888运行内存：8GB机身颜色：雪域白三防标准：IP68充电功率：50-79W支持IPv6：支持IPv6屏幕材质：OLED曲面屏后摄主像素：5000万像素机身内存：256GB屏幕分辨率：FHD+风格：科技，时尚机身色系：白色系",
+  "category3Id": 61,
+  "tmId": 2,
+    //保存在spu_info表中
+
+
+  "spuImageList": [
+    {
+      "imgName": "5.png",
+      "imgUrl": "http://192.168.200.100:9000/gmall/2022-08-26/4970274d49394e0fa61fcd6503a7a97c-5.png"
+    },
+    {
+      "imgName": "2.png",
+      "imgUrl": "http://192.168.200.100:9000/gmall/2022-08-26/cbff99871e024093b6aadf100ffff336-2.png"
+    },
+    {
+      "imgName": "1.png",
+      "imgUrl": "http://192.168.200.100:9000/gmall/2022-08-26/17898ee60ad84c93bb15a1a08e464415-1.png"
+    },
+    {
+      "imgName": "3.png",
+      "imgUrl": "http://192.168.200.100:9000/gmall/2022-08-26/9e92bfb5a29f4d9788081384a559318c-3.png"
+    },
+    {
+      "imgName": "4.png",
+      "imgUrl": "http://192.168.200.100:9000/gmall/2022-08-26/c353a0490fb54d1abddcb4bed3f4a524-4.png"
+    }
+  ],
+  //这些图片保存在spu_info
+
+
+  "spuSaleAttrList": [
+    {
+      "baseSaleAttrId": "1",
+      "saleAttrName": "选择颜色",
+      "spuSaleAttrValueList": [
+        {
+          "baseSaleAttrId": "1",
+          "saleAttrValueName": "蓝色"
+        },
+        {
+          "baseSaleAttrId": "1",
+          "saleAttrValueName": "黑色"
+        },
+        {
+          "baseSaleAttrId": "1",
+          "saleAttrValueName": "粉色"
+        }
+      ]
+    },
+    {
+      "baseSaleAttrId": "2",
+      "saleAttrName": "选择版本",
+      "spuSaleAttrValueList": [
+        {
+          "baseSaleAttrId": "2",
+          "saleAttrValueName": "128G"
+        },
+        {
+          "baseSaleAttrId": "2",
+          "saleAttrValueName": "256G"
+        },
+        {
+          "baseSaleAttrId": "2",
+          "saleAttrValueName": "512G"
+        }
+      ]
+    }
+  ]
+
+  //spu_sale_attr  当前spu的销售属性名关联表
+  //spu_sale_attr_value  当前spu的销售属性值关联表
+
+}

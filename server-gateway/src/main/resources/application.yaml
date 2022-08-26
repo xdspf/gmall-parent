@@ -27,5 +27,9 @@ spring:
           uri: lb://service-product
           predicates:  #断言
             - Path=/admin/product/**
+        - id: web-all_route # 以 /admin/product 开头的所有请求都lb(loadbalancer)转给service-product
+          uri: lb://web-all
+          predicates: #断言
+            - Host=**.gmall.com
 
 
