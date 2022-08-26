@@ -16,17 +16,17 @@
         ,attr_name,category_id,
         category_level
     </sql>
-<!-- autoMapping:自动映射（因为数据库的字段名和JavaBean一样）   autoMapping: 数据库的列和JavaBean属性一一对应符合驼峰命名规则     -->
+    <!-- autoMapping:自动映射（因为数据库的字段名和JavaBean一样）   autoMapping: 数据库的列和JavaBean属性一一对应符合驼峰命名规则     -->
     <resultMap id="AttrInfoAndValue" type="com.atguigu.gmall.model.product.BaseAttrInfo" autoMapping="true">
         <!--        用id标签区分唯一id-->
         <id column="id" property="id"></id>
-<!--        <result column="attr_name" property="attrName"></result>-->
-<!--        <result column="category_id" property="categoryId"></result>-->
-<!--        <result column="category_level" property="categoryLevel"></result>-->
+        <!--        <result column="attr_name" property="attrName"></result>-->
+        <!--        <result column="category_id" property="categoryId"></result>-->
+        <!--        <result column="category_level" property="categoryLevel"></result>-->
         <collection property="attrValueList" ofType="com.atguigu.gmall.model.product.BaseAttrValue" autoMapping="true">
             <id column="vid" property="id"></id>
-<!--            <result column="value_name" property="valueName"></result>-->
-<!--            <result column="attr_id" property="attrId"></result>-->
+            <!--            <result column="value_name" property="valueName"></result>-->
+            <!--            <result column="attr_id" property="attrId"></result>-->
         </collection>
     </resultMap>
 
@@ -34,10 +34,18 @@
 
         SELECT b1.*, b2.id vid, b2.value_name, b2.attr_id
         from base_attr_info b1
-                 LEFT JOIN base_attr_value b2 on b1.id = b2.attr_id
-        WHERE (b1.category_id = #{c1Id} and b1.category_level = 1)
-           OR (b1.category_id = #{c2Id} and b1.category_level = 2)
-           or (b1.category_id = #{c3Id} and b1.category_level = 3)
+        LEFT JOIN base_attr_value b2 on b1.id = b2.attr_id
+        <where>
+            <if test="c1Id != 0">
+                (b1.category_id = #{c1Id} and b1.category_level = 1)
+            </if>
+            <if test="c2Id != 0">
+                OR (b1.category_id = #{c2Id} and b1.category_level = 2)
+            </if>
+            <if test="c3Id != 0">
+                or (b1.category_id = #{c3Id} and b1.category_level = 3)
+            </if>
+        </where>
 
     </select>
 </mapper>
