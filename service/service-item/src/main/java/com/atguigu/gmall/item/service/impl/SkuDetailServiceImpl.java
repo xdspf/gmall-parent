@@ -16,7 +16,6 @@ public class SkuDetailServiceImpl implements SkuDetailService {
     @Override
     public SkuDetailTo getSkuDetail(Long skuId) {
 
-        SkuDetailTo skuDetailTo = new SkuDetailTo();
         //远程调用商品服务查询
         Result<SkuDetailTo> skuDetail = skuDetailFeignClient.getSkuDetail(skuId);
 
