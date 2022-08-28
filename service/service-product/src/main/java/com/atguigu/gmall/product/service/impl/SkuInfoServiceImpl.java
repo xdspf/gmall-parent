@@ -3,6 +3,7 @@ package com.atguigu.gmall.product.service.impl;
 import com.atguigu.gmall.model.product.*;
 import com.atguigu.gmall.model.to.CategoryViewTo;
 import com.atguigu.gmall.model.to.SkuDetailTo;
+import com.atguigu.gmall.model.to.ValueSkuJsonTo;
 import com.atguigu.gmall.product.mapper.BaseCategory3Mapper;
 import com.atguigu.gmall.product.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -84,6 +85,7 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoMapper, SkuInfo>
         skuInfoMapper.updateIsSale(skuId, 1);
     }
 
+    @Deprecated
     @Override
     public SkuDetailTo getSkuDetail(Long skuId) {
 
@@ -108,9 +110,14 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoMapper, SkuInfo>
 
         //4.商品（sku）所属的SPU当时定义的所有销售属性名值组合  spu_sale_attr  、  spu_sale_attr_value
         //查询当前sku对应的spu定义的所有销售属性名和值（固定好顺序）并且标记好当前sku属于哪一种组合
-        List<SpuSaleAttr> saleAttrList = spuSaleAttrService.getSaleAttrAndValueMarkSpu(skuInfo.getSpuId(),skuId);
+        List<SpuSaleAttr> saleAttrList = spuSaleAttrService.getSaleAttrAndValueMarkSku(skuInfo.getSpuId(), skuId);
         detailTo.setSpuSaleAttrList(saleAttrList);
 
+        //5.商品（sku）的所有兄弟产品的销售属性名和值组合关系全部查出来，并封装成
+        //{"124|126":"49","125|127":"50"}这样的字符串
+        Long spuId = skuInfo.getSpuId();
+        String valueJson = spuSaleAttrService.getAllSkuSaleAttrValueJson(spuId);
+        detailTo.setValuesSkuJson(valueJson);
 
         return detailTo;
     }
@@ -119,6 +126,22 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoMapper, SkuInfo>
     public BigDecimal get1010Price(Long skuId) {
         BigDecimal price = skuInfoMapper.getRealPrice(skuId);
         return price;
+    }
+
+    /*
+            优化
+     */
+
+    @Override
+    public SkuInfo getDetailSkuInfo(Long skuId) {
+        SkuInfo skuInfo = skuInfoMapper.selectById(skuId);
+        return skuInfo;
+    }
+
+    @Override
+    public List<SkuImage> getDetailSkuImages(Long skuId) {
+        List<SkuImage> imageList = skuImageService.getSkuImage(skuId);
+        return imageList;
     }
 }
 
