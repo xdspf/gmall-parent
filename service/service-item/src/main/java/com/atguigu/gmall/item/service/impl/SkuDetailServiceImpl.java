@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -40,32 +41,54 @@ public class SkuDetailServiceImpl implements SkuDetailService {
     public SkuDetailTo getSkuDetail(Long skuId) {
         SkuDetailTo detailTo = new SkuDetailTo();
 
-
-        Result<SkuInfo> result = skuDetailFeignClient.getSkuInfo(skuId);
-        //1.查基本信息
-        SkuInfo skuInfo = result.getData();
-        detailTo.setSkuInfo(skuInfo);
-
-        //2.查商品图片信息
-        Result<List<SkuImage>> skuImage = skuDetailFeignClient.getSkuImage(skuId);
-        skuInfo.setSkuImageList(skuImage.getData());
+        CompletableFuture<SkuInfo> skuInfoFuture = CompletableFuture.supplyAsync(() -> {
+            Result<SkuInfo> result = skuDetailFeignClient.getSkuInfo(skuId);
+            //1.查基本信息
+            SkuInfo skuInfo = result.getData();
+            detailTo.setSkuInfo(skuInfo);
+            return skuInfo;
+        }, executor);
 
 
-        //3.查商品实时价格
-        Result<BigDecimal> sku1010Price = skuDetailFeignClient.getSku1010Price(skuId);
-        detailTo.setPrice(sku1010Price.getData());
+        CompletableFuture<Void> imageFuture = skuInfoFuture.thenAcceptAsync(skuInfo -> {
 
-        //4.查销售属性名和值
-        Result<List<SpuSaleAttr>> saleattrvalues = skuDetailFeignClient.getSkuSaleattrvalues(skuId, skuInfo.getSpuId());
-        detailTo.setSpuSaleAttrList(saleattrvalues.getData());
+            //2.查商品图片信息
+            Result<List<SkuImage>> skuImage = skuDetailFeignClient.getSkuImage(skuId);
+            skuInfo.setSkuImageList(skuImage.getData());
+        }, executor);
 
-        //5.sku组合
-        Result<String> skuValueJson = skuDetailFeignClient.getSkuValueJson(skuInfo.getSpuId());
-        detailTo.setValuesSkuJson(skuValueJson.getData());
+        CompletableFuture<Void> priceFuture = CompletableFuture.runAsync(() -> {
 
-        //6.查分类
-        Result<CategoryViewTo> categoryview = skuDetailFeignClient.getSkuCategoryview(skuInfo.getCategory3Id());
-        detailTo.setCategoryView(categoryview.getData());
+            //3.查商品实时价格
+            Result<BigDecimal> sku1010Price = skuDetailFeignClient.getSku1010Price(skuId);
+            detailTo.setPrice(sku1010Price.getData());
+        }, executor);
+
+
+        CompletableFuture<Void> saleAttrFuture = skuInfoFuture.thenAcceptAsync(skuInfo -> {
+            Long spuId = skuInfo.getSpuId();
+
+            //4.查销售属性名和值
+            Result<List<SpuSaleAttr>> saleattrvalues = skuDetailFeignClient.getSkuSaleattrvalues(skuId, spuId);
+            detailTo.setSpuSaleAttrList(saleattrvalues.getData());
+        }, executor);
+
+        CompletableFuture<Void> skuValueFuture = skuInfoFuture.thenAcceptAsync(skuInfo -> {
+
+            //5.sku组合
+            Result<String> skuValueJson = skuDetailFeignClient.getSkuValueJson(skuInfo.getSpuId());
+            detailTo.setValuesSkuJson(skuValueJson.getData());
+        }, executor);
+
+        CompletableFuture<Void> categoryFuture = skuInfoFuture.thenAcceptAsync(skuInfo -> {
+
+            //6.查分类
+            Result<CategoryViewTo> categoryview = skuDetailFeignClient.getSkuCategoryview(skuInfo.getCategory3Id());
+            detailTo.setCategoryView(categoryview.getData());
+        }, executor);
+
+        CompletableFuture.allOf(imageFuture,priceFuture,saleAttrFuture,skuValueFuture,categoryFuture)
+                .join();
 
         return detailTo;
     }
