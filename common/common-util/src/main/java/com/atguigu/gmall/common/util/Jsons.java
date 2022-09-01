@@ -2,6 +2,8 @@ package com.atguigu.gmall.common.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.omg.CORBA.MARSHAL;
+import org.springframework.util.StringUtils;
 
 public class Jsons {
 
@@ -18,5 +20,25 @@ public class Jsons {
         } catch (JsonProcessingException e) {
             return null;
         }
+    }
+    /**
+     * 把json转为对象
+     * @param jsonStr
+     * @param clz
+     * @param <T>
+     * @return
+     */
+    public static <T> T toObj(String jsonStr, Class<T> clz) {
+        if (StringUtils.isEmpty(jsonStr)){
+            return null;
+        }
+        T t = null;
+        try {
+            t = mapper.readValue(jsonStr, clz);
+            return t;
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

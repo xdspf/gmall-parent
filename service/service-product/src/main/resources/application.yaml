@@ -1,5 +1,7 @@
 server:
   port: 9000
+  tomcat:
+    max-connections: 200
 
 
 spring:
@@ -14,6 +16,10 @@ spring:
     username: root
     password: 123456
     driver-class-name: com.mysql.jdbc.Driver
+
+  redis:
+    host: 192.168.200.100
+    password: Spf123456
 
 
 #自定义配置
