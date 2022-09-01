@@ -9,6 +9,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.cloud.client.SpringCloudApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  *  3、精准导入：@Import({Swagger2Config.class})
  */
 
+@EnableScheduling //开启SpringBoot定时任务调度
 @EnableThreadPool
 //@EnableTransactionManagement //开启事务
 @Import({Swagger2Config.class, RedissonAutoConfiguration.class})  //精准导入

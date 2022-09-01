@@ -7,6 +7,7 @@ import com.atguigu.gmall.common.config.threadpool.AppThreadPoolProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.cloud.client.SpringCloudApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 
 /**
@@ -27,6 +28,7 @@ import org.springframework.context.annotation.Import;
  *    给redis存数据，key是string，value序列化成字符串
  */
 
+@EnableAspectJAutoProxy  //开启aspectj的自动代理功能 （可以给任意类创建代理对象）
 @Import({RedissonAutoConfiguration.class})
 @EnableThreadPool
 @EnableFeignClients

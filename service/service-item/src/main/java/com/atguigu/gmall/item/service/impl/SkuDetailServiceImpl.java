@@ -3,6 +3,7 @@ package com.atguigu.gmall.item.service.impl;
 import com.atguigu.gmall.common.constant.SysRedisConst;
 import com.atguigu.gmall.common.result.Result;
 import com.atguigu.gmall.common.util.Jsons;
+import com.atguigu.gmall.item.annotation.GmallCache;
 import com.atguigu.gmall.item.cache.CacheOpsService;
 import com.atguigu.gmall.item.feign.SkuDetailFeignClient;
 import com.atguigu.gmall.item.service.SkuDetailService;
@@ -46,6 +47,18 @@ public class SkuDetailServiceImpl implements SkuDetailService {
     Map<Long, ReentrantLock> lockPool = new ConcurrentHashMap<>();
     ReentrantLock lock = new ReentrantLock(); //锁得住
 
+
+
+    @GmallCache
+    @Override
+    public SkuDetailTo getSkuDetail(Long skuId) {
+        SkuDetailTo fromRpc = getSkuDetailFromRpc(skuId);
+        return fromRpc;
+    }
+
+
+
+
 //    @Override
 //    public SkuDetailTo getSkuDetail(Long skuId) {
 //        Result<SkuDetailTo> skuDetail = skuDetailFeignClient.getSkuDetail(skuId);
@@ -54,7 +67,9 @@ public class SkuDetailServiceImpl implements SkuDetailService {
 //    }
 
 
-    @Override
+
+
+   /* @Override
     public SkuDetailTo getSkuDetail(Long skuId) {
         String cacheKey = SysRedisConst.SKU_INFO_PREFIX + skuId;
         //1.查看缓存(从缓存中获取一个数据，并转为这个类型)
@@ -94,7 +109,7 @@ public class SkuDetailServiceImpl implements SkuDetailService {
         //4.缓存中有，直接返回
         return cacheData;
     }
-
+*/
 
     /**
      * 进行 redis分布式缓存优化
@@ -241,6 +256,7 @@ public class SkuDetailServiceImpl implements SkuDetailService {
 
         return detailTo;
     }
+
 
 
 }
