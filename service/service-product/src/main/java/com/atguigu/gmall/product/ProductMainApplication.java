@@ -28,7 +28,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableScheduling //开启SpringBoot定时任务调度
 @EnableThreadPool
 //@EnableTransactionManagement //开启事务
-@Import({Swagger2Config.class, RedissonAutoConfiguration.class})  //精准导入
+@Import({Swagger2Config.class})  //精准导入
+//@Import({Swagger2Config.class, RedissonAutoConfiguration.class})  //精准导入
 //@ComponentScan("com.atguigu.gmall.common.config")  //方式一
 @SpringCloudApplication
 @MapperScan(basePackages = "com.atguigu.gmall.product.mapper") //自动扫描这个包下的所有mapper接口

@@ -41,10 +41,18 @@
             <version>31.1-jre</version>
         </dependency>
 
-<!--        切面：AOP-->
+        <!--        切面：AOP-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+
+
+        <!--导包-->
+        <dependency>
+            <groupId>com.atguigu.gmall</groupId>
+            <artifactId>mall-cache-starter</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
 
 

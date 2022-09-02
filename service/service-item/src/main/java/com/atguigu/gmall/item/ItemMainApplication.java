@@ -28,8 +28,8 @@ import org.springframework.context.annotation.Import;
  *    给redis存数据，key是string，value序列化成字符串
  */
 
-@EnableAspectJAutoProxy  //开启aspectj的自动代理功能 （可以给任意类创建代理对象）
-@Import({RedissonAutoConfiguration.class})
+//@EnableAspectJAutoProxy  //开启aspectj的自动代理功能 （可以给任意类创建代理对象）
+//@Import({RedissonAutoConfiguration.class})
 @EnableThreadPool
 @EnableFeignClients
 @SpringCloudApplication
