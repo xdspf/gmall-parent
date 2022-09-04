@@ -78,8 +78,8 @@ public class CacheAspect {
 //            boolean contains = cacheOpsService.bloomContains(arg);
 
             String bloomName = determinBloomName(joinPoint);
-            if (!StringUtils.isEmpty(bloomName)){
-                Object bVal =  determinBloomValue(joinPoint);
+            if (!StringUtils.isEmpty(bloomName)) {
+                Object bVal = determinBloomValue(joinPoint);
                 boolean contains = cacheOpsService.bloomContains(bloomName, bVal);
 
                 if (!contains) {
@@ -92,15 +92,16 @@ public class CacheAspect {
             //5.布隆说有，准备回源，有击穿风险，先加锁
 
             boolean lock = false;  //尝试加锁
-            String lockName ="";
+            String lockName = "";
             try {
-                  lockName =  determinLockName(joinPoint);
+                lockName = determinLockName(joinPoint);
                 lock = cacheOpsService.tryLock(lockName);
                 if (lock) {
                     //6.获取到锁，开始回源
                     result = joinPoint.proceed(joinPoint.getArgs());
+                    long ttl = determinTtl(joinPoint);
                     //7.调用成功，重新保存到缓存
-                    cacheOpsService.saveData(cacheKey, result);
+                    cacheOpsService.saveData(cacheKey, result, ttl);
                     return result;
 
                 } else {
@@ -119,8 +120,22 @@ public class CacheAspect {
         return cacheData;
     }
 
+    private long determinTtl(ProceedingJoinPoint joinPoint) {
+        //1.拿到目标方法上的@GmallCache注解
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+
+        Method method = signature.getMethod();
+
+        //2.拿到注解
+        GmallCache cacheAnnotation = method.getDeclaredAnnotation(GmallCache.class);
+
+        long ttl = cacheAnnotation.ttl();
+        return ttl;
+    }
+
     /**
      * 根据表达式计算出要用的锁的名字
+     *
      * @param joinPoint
      * @return
      */
@@ -135,9 +150,9 @@ public class CacheAspect {
         GmallCache cacheAnnotation = method.getDeclaredAnnotation(GmallCache.class);
         //3.拿到锁表达式
         String lockName = cacheAnnotation.lockName();
-        if (StringUtils.isEmpty(lockName)){
+        if (StringUtils.isEmpty(lockName)) {
             //没指定锁用方法级别的锁
-            return SysRedisConst.LOCK_PREFIX +method.getName();
+            return SysRedisConst.LOCK_PREFIX + method.getName();
         }
         //4.计算锁值
         String lockNameVal = evaluationExpression(lockName, joinPoint, String.class);
@@ -147,6 +162,7 @@ public class CacheAspect {
 
     /**
      * 根据布隆过滤器值表达式计算出布隆需要判定的值
+     *
      * @param joinPoint
      * @return
      */

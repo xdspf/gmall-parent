@@ -5,21 +5,25 @@ server:
 
 
 spring:
-  zipkin:
-    base-url: http://192.168.200.100:9411/
-    sender:
-      type: web
-
-
+  profiles:
+    include: sharding  #包含的文件不起区分激活的profile
+  #  profiles:
+#    active: sharding  #主文件application.yaml和激活的application-{profile}.yaml  同时生效
   datasource:
     url: jdbc:mysql://192.168.200.100:3306/gmall_product?useSSL=false&characterEncoding=utf-8
     username: root
     password: 123456
     driver-class-name: com.mysql.jdbc.Driver
 
-  redis:
-    host: 192.168.200.100
-    password: Spf123456
+
+#  zipkin:
+#    base-url: http://192.168.200.100:9411/
+#    sender:
+#      type: web
+#
+#  redis:
+#    host: 192.168.200.100
+#    password: Spf123456
 
 
 #自定义配置

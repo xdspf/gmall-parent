@@ -31,7 +31,7 @@ import org.springframework.context.annotation.Import;
 //@EnableAspectJAutoProxy  //开启aspectj的自动代理功能 （可以给任意类创建代理对象）
 //@Import({RedissonAutoConfiguration.class})
 @EnableThreadPool
-@EnableFeignClients
+@EnableFeignClients(basePackages = "com.atguigu.gmall.feign.product")
 @SpringCloudApplication
 //@Import(AppThreadPoolAutoConfiguration.class)
 public class ItemMainApplication {

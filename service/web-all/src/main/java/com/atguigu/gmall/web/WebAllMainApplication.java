@@ -9,8 +9,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringCloudApplication //把配置放在application.yaml中
-@EnableFeignClients  //开启远程调用功能
-
+@EnableFeignClients(basePackages = {"com.atguigu.gmall.feign.item","com.atguigu.gmall.feign.product"})  //开启远程调用功能
 //方式一
 //@EnableDiscoveryClient //把服务信息暴露给消费端
 //@EnableCircuitBreaker

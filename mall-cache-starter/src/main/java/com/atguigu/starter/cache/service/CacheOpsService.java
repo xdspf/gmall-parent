@@ -52,6 +52,9 @@ public interface CacheOpsService {
      */
     void saveData(String cacheKey, Object fromRpc);
 
+
+    void saveData(String cacheKey, Object fromRpc,Long dataTtl);
+
     /**
      * 解锁
      * @param skuId
@@ -64,4 +67,11 @@ public interface CacheOpsService {
      */
 
     void unlock(String lockName);
+
+
+    /*
+        延迟双删
+     */
+    void delay2Delete(String cacheKey);
+
 }
