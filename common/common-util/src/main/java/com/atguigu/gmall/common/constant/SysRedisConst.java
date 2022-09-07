@@ -13,4 +13,5 @@ public class SysRedisConst {
 
     public static final String CACHE_CATEGORYS = "categorys";
 
+    public static final int SEARCH_PAGE_SIZE = 10;
 }

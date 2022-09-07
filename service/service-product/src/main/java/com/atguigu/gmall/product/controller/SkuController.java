@@ -36,7 +36,7 @@ public class SkuController {
     }
 
     /*
-    下架
+            商品下架
      */
 
     //admin/product/cancelSale/46
@@ -47,7 +47,7 @@ public class SkuController {
     }
 
     /*
-    上架
+            商品上架
      */
 
     //  admin/product/onSale/49
