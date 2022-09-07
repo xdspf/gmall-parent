@@ -20,4 +20,8 @@ public interface SearchFeignClient {
     @PostMapping("/goods/search")
     public Result<SearchResponseVo> search(@RequestBody SearchParamVo paramVo);
 
+    @GetMapping("/goods/hotscore/{skuId}")
+    public Result updateHotScore(@PathVariable("skuId") Long skuId ,
+                                @RequestParam("score") Long score);
+
 }

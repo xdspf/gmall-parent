@@ -13,10 +13,13 @@ import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.NestedQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.nested.NestedAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.nested.ParsedNested;
 import org.elasticsearch.search.aggregations.bucket.terms.ParsedLongTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.ParsedStringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -32,6 +35,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -70,6 +74,22 @@ public class GoodsServiceImpl implements GoodsService {
         return responseVo;
     }
 
+    @Override
+    public void updateHotScore(Long skuId, Long score) {
+
+        //1.找到商品
+        Goods goods = goodsRepository.findById(skuId).get();
+        //2.更新得分
+        goods.setHotScore(score);
+        //3.同步到es
+        goodsRepository.save(goods);
+
+        //https://www.elastic.co/guide/en/elasticsearch/reference/7.17/rest-apis.html
+        //ES可以发送修改DSL，只更新hotScore字段
+//        esRestTemplate.update();
+
+    }
+
 
     /**
      * 根据检索到的记录，构建响应结果
@@ -105,12 +125,12 @@ public class GoodsServiceImpl implements GoodsService {
         }
 
         //4、所有品牌列表 。需要ES聚合分析
-//        List<TrademarkVo> trademarkVos = buildTrademarkList(goods);
-//        vo.setTrademarkList(trademarkVos);
+        List<TrademarkVo> trademarkVos = buildTrademarkList(goods);
+        vo.setTrademarkList(trademarkVos);
 
-        //TODO 5、所有属性列表 。需要ES聚合分析
-//        List<AttrVo> attrVoList = buildAttrList(goods);
-//        vo.setAttrsList(attrVoList);
+        // 5、所有属性列表 。需要ES聚合分析
+        List<AttrVo> attrsList = buildAttrList(goods);
+        vo.setAttrsList(attrsList);
 
         //为了回显
         //6、返回排序信息  order=1:desc
@@ -234,6 +254,7 @@ public class GoodsServiceImpl implements GoodsService {
             //3.2属性名
             ParsedStringTerms attrNameAgg = bucket.getAggregations().get("attrNameAgg");
             String attrName = attrNameAgg.getBuckets().get(0).getKeyAsString();
+            attrVo.setAttrName(attrName);
 
             //3.3所有属性值
             List<String> attrValues = new ArrayList<>();
@@ -258,7 +279,7 @@ public class GoodsServiceImpl implements GoodsService {
      */
     private List<TrademarkVo> buildTrademarkList(SearchHits<Goods> goods) {
 
-      //StreamAPI
+        //StreamAPI
         List<TrademarkVo> trademarkVos = new ArrayList<>();
 
 
@@ -333,7 +354,7 @@ public class GoodsServiceImpl implements GoodsService {
         //2.4）、前端传了属性 props=4:128GB:机身存储&props=5:骁龙730:CPU型号
         //2.4）、前端传了属性 props=4:128GB:机身存储&props=5:骁龙730:CPU型号
         String[] props = paramVo.getProps();
-        if(props!=null && props.length > 0){
+        if (props != null && props.length > 0) {
             for (String prop : props) {
                 //4:128GB:机身存储 得到属性id和值
                 String[] split = prop.split(":");
@@ -342,11 +363,11 @@ public class GoodsServiceImpl implements GoodsService {
 
                 //构造boolQuery
                 BoolQueryBuilder nestedBool = QueryBuilders.boolQuery();
-                nestedBool.must(QueryBuilders.termQuery("attrs.attrId",attrId));
-                nestedBool.must(QueryBuilders.termQuery("attrs.attrValue",attrValue));
+                nestedBool.must(QueryBuilders.termQuery("attrs.attrId", attrId));
+                nestedBool.must(QueryBuilders.termQuery("attrs.attrValue", attrValue));
 
                 NestedQueryBuilder nestedQuery =
-                        QueryBuilders.nestedQuery("attrs",nestedBool, ScoreMode.None);
+                        QueryBuilders.nestedQuery("attrs", nestedBool, ScoreMode.None);
 
                 //给最大的boolQuery里面放 嵌入式查询 nestedQuery
                 boolQuery.must(nestedQuery);
@@ -404,6 +425,44 @@ public class GoodsServiceImpl implements GoodsService {
             query.setHighlightQuery(highlightQuery);
         }
         //===========模糊查询高亮功能结束=================
+
+        //=========聚合分析上面DSL检索到的所有商品涉及了多少种品牌和多少种平台属性
+        //TODO
+        //3、品牌聚合 - 品牌聚合分析条件
+        TermsAggregationBuilder tmIdAgg = AggregationBuilders.terms("tmIdAgg").field("tmId").size(1000);
+
+        //3.1 品牌聚合 - 品牌名子聚合
+        TermsAggregationBuilder tmNameAgg = AggregationBuilders.terms("tmNameAgg").field("tmName").size(1);
+        //3.2 品牌聚合 - 品牌logo子聚合
+        TermsAggregationBuilder tmLogoAgg = AggregationBuilders.terms("tmLogoAgg").field("tmLogoUrl").size(1);
+
+        tmIdAgg.subAggregation(tmNameAgg);
+        tmIdAgg.subAggregation(tmLogoAgg);
+
+        //品牌id聚合条件拼装完成
+        query.addAggregation(tmIdAgg);
+
+
+        //4、属性聚合
+        //4.1 属性的整个嵌入式聚合
+        NestedAggregationBuilder attrAgg = AggregationBuilders.nested("attrAgg", "attrs");
+
+
+        //4.2 attrid 聚合
+        TermsAggregationBuilder attrIdAgg = AggregationBuilders.terms("attrIdAgg").field("attrs.attrId").size(100);
+
+        //4.3 attrname 聚合
+        TermsAggregationBuilder attrNameAgg = AggregationBuilders.terms("attrNameAgg").field("attrs.attrName").size(1);
+
+        //4.4 attrvalue 聚合
+        TermsAggregationBuilder attrValueAgg = AggregationBuilders.terms("attrValueAgg").field("attrs.attrValue").size(100);
+
+        attrIdAgg.subAggregation(attrNameAgg);
+        attrIdAgg.subAggregation(attrValueAgg);
+        attrAgg.subAggregation(attrIdAgg);
+
+        //添加整个属性的聚合条件
+        query.addAggregation(attrAgg);
 
 
         return query;
