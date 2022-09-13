@@ -18,4 +18,9 @@ public class SysRedisConst {
 
 
     public static final String LOGIN_USER = "user:login:"; //拼接token
+    public static final String USERID_HEADER = "userid";
+    public static final String USERTEMPID_HEADER = "usertempid";
+    public static final String CART_KEY = "cart:user:"; //用户id或临时id
+    public static final long CART_ITEMS_LIMIT = 200;
+    public static final Integer CART_ITEM_NUM_LIMIT = 200;
 }
