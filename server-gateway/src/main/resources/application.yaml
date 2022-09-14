@@ -43,6 +43,11 @@ spring:
           predicates:
             - Path=/api/cart/**
 
+        - id: order_router
+          uri: lb://service-order
+          predicates:
+            - Path=/api/order/**
+
         - id: web-all_route # 以 /admin/product 开头的所有请求都lb(loadbalancer)转给service-product
           uri: lb://web-all
           predicates: #断言
@@ -58,7 +63,8 @@ app:
       - /api/user/passport/login
 
     login-auth-url: #登录以后才能访问的资源
-      - /order/**
+      - /api/**/auth
+      - /trade.html
     deny-url:
       - /api/inner/**
 

@@ -85,9 +85,9 @@ public class CartServiceImpl implements CartService {
         //1、老请求
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         //2.绑定请求到这个线程
-        executor.submit(() ->{
+        executor.submit(() -> {
             RequestContextHolder.setRequestAttributes(requestAttributes);
-            updateCartAllItemsPrice(cartKey,infos);
+            updateCartAllItemsPrice(cartKey);
             //3.移除数据
             RequestContextHolder.resetRequestAttributes();
 
@@ -144,7 +144,7 @@ public class CartServiceImpl implements CartService {
                 .map(cartInfo -> cartInfo.getSkuId().toString())
                 .collect(Collectors.toList());
 
-        if(ids!=null && ids.size() > 0){
+        if (ids != null && ids.size() > 0) {
             hashOps.delete(ids.toArray());
         }
 
@@ -167,22 +167,22 @@ public class CartServiceImpl implements CartService {
 
         UserAuthInfo authInfo = AuthUtils.getCurrentAuthInfo();
         //1、判断是否需要合并
-        if(authInfo.getUserId()!=null && !StringUtils.isEmpty(authInfo.getUserTempId())){
+        if (authInfo.getUserId() != null && !StringUtils.isEmpty(authInfo.getUserTempId())) {
             //2、可能需要合并
             //3、临时购物车有东西。合并后删除临时购物车
-            String tempCartKey = SysRedisConst.CART_KEY+authInfo.getUserTempId();
+            String tempCartKey = SysRedisConst.CART_KEY + authInfo.getUserTempId();
             //3.1、获取临时购物车中所有商品
             List<CartInfo> tempCartList = getCartList(tempCartKey);
-            if(tempCartList!=null && tempCartList.size()>0){
+            if (tempCartList != null && tempCartList.size() > 0) {
                 //临时购物车有数据，需要合并
-                String userCartKey = SysRedisConst.CART_KEY+authInfo.getUserId();
+                String userCartKey = SysRedisConst.CART_KEY + authInfo.getUserId();
                 for (CartInfo info : tempCartList) {
                     Long skuId = info.getSkuId();
                     Integer skuNum = info.getSkuNum();
-                    addItemToCart(skuId,skuNum,userCartKey);
+                    addItemToCart(skuId, skuNum, userCartKey);
 
                     //3.2、合并成一个商品就删除一个
-                    redisTemplate.opsForHash().delete(tempCartKey,skuId.toString());
+                    redisTemplate.opsForHash().delete(tempCartKey, skuId.toString());
                 }
 
             }
@@ -190,14 +190,15 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public void updateCartAllItemsPrice(String cartKey, List<CartInfo> cartInfos) {
+    public void updateCartAllItemsPrice(String cartKey) {
 
         BoundHashOperations<String, String, String> cartOps = redisTemplate.boundHashOps(cartKey);
 
         System.out.println("更新价格启动：" + Thread.currentThread());
 
-        cartInfos.stream()
-                .forEach(cartInfo -> {
+        cartOps.values().stream()
+                .map(str -> Jsons.toObj(str, CartInfo.class)
+                ).forEach(cartInfo -> {
                     //1.查出最新价格
                     Result<BigDecimal> price = skuFeignClient.getSku1010Price(cartInfo.getSkuId());
 
@@ -205,9 +206,12 @@ public class CartServiceImpl implements CartService {
                     cartInfo.setSkuPrice(price.getData());
                     cartInfo.setUpdateTime(new Date());
                     //3.更新购物车价格
-                    cartOps.put(cartInfo.getSkuId().toString(),Jsons.toStr(cartInfo));
+                    if (cartOps.hasKey(cartInfo.getSkuId().toString())) {
 
+                        cartOps.put(cartInfo.getSkuId().toString(), Jsons.toStr(cartInfo));
+                    }
                 });
+
         System.out.println("更新价格结束：" + Thread.currentThread());
 
     }
@@ -242,7 +246,7 @@ public class CartServiceImpl implements CartService {
         //1、如果这个skuId之前没有添加过，就新增。还需要远程调用查询当前信息
         if (!hasKey) {
 
-            if (itemSize + 1 > SysRedisConst.CART_ITEMS_LIMIT ){
+            if (itemSize + 1 > SysRedisConst.CART_ITEMS_LIMIT) {
                 //异常机制
                 throw new GmallException(ResultCodeEnum.CART_OVERFLOW);
             }

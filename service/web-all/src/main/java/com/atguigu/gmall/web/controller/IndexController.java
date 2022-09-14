@@ -19,7 +19,7 @@ public class IndexController {
     /*
         跳转首页
      */
-    @GetMapping({"/","/index"}) //访问首页
+    @GetMapping({"/","/index","/index.html"}) //访问首页
     public  String indexPage(Model model){
         Result<List<CategoryTreeTo>> result = categoryFeignClient.getAllCategoryWithTree();
         if (result.isOk()){ //远程调用成功

@@ -1,0 +1,32 @@
+{
+  "consignee": "spf",
+  "consigneeTel": "15191867896",
+  "deliveryAddress": "西安市雁塔区丈八街道陈家庄小区27排",
+  "orderComment": "",
+  "orderDetailList": [
+    {
+      "skuId": 44,
+      "imgUrl": "http://192.168.200.100:9000/gmall/2022-08-26/c16ebfed0994419d884de06168014da3-2.png",
+      "skuName": "小米 CC9 PLUS 手机 美颜自拍 游戏手机 仙女渐变色(美图定制版) 4G全网通 6GB+128GB",
+      "orderPrice": 2200,
+      "skuNum": 2,
+      "hasStock": "0"
+    },
+    {
+      "skuId": 50,
+      "imgUrl": "http://192.168.200.100:9000/gmall/2022-08-26/c16ebfed0994419d884de06168014da3-2.png",
+      "skuName": "荣耀30 50倍远摄 麒麟985 5G 4000万超广角AI四摄 美颜自拍全网通5G版 荣耀30【蓝色】 全网通(8GB+256GB)",
+      "orderPrice": 3699,
+      "skuNum": 1,
+      "hasStock": "0"
+    },
+    {
+      "skuId": 49,
+      "imgUrl": "http://192.168.200.100:9000/gmall/2022-08-26/7aaf88639a5348cba3df0b709d0b5980-1.png",
+      "skuName": "荣耀30 50倍远摄 麒麟985 5G 4000万超广角AI四摄 美颜自拍全网通5G版 荣耀30【幻夜黑】 全网通(8GB+128GB)",
+      "orderPrice": 5999,
+      "skuNum": 10,
+      "hasStock": "0"
+    }
+  ]
+}

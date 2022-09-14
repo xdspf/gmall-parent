@@ -11,10 +11,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @EnableAutoFeignInterceptor
 @SpringCloudApplication //把配置放在application.yaml中
-@EnableFeignClients(basePackages = {"com.atguigu.gmall.feign.item",
-                        "com.atguigu.gmall.feign.product",
-                        "com.atguigu.gmall.feign.search",
-        "com.atguigu.gmall.feign.cart"})  //开启远程调用功能
+@EnableFeignClients(basePackages = {"com.atguigu.gmall.feign"})  //开启远程调用功能
 //方式一
 //@EnableDiscoveryClient //把服务信息暴露给消费端
 //@EnableCircuitBreaker

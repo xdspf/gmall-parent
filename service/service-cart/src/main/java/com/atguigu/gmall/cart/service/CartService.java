@@ -35,6 +35,6 @@ public interface CartService {
 
     void mergeUserAndTempCart();
 
-    void updateCartAllItemsPrice(String cartKey, List<CartInfo> infos);
+    void updateCartAllItemsPrice(String cartKey);
 
 }
