@@ -3,6 +3,7 @@ package com.atguigu.gmall.order.controller;
 import com.atguigu.gmall.common.result.Result;
 import com.atguigu.gmall.model.vo.order.OrderSubmitVo;
 import com.atguigu.gmall.order.biz.OrderBizService;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,10 @@ public class OrderResrController {
     @Autowired
     OrderBizService orderBizService;
 
+    @Autowired
+    RabbitTemplate rabbitTemplate;
+
+
     /**
      * 提交订单
      *
@@ -24,6 +29,7 @@ public class OrderResrController {
     public Result submitOrder(@RequestParam("tradeNo") String tradeNo, @RequestBody OrderSubmitVo submitVo) {
         //提交订单
         Long orderId = orderBizService.submitOrder(submitVo,tradeNo);
+
 
         return Result.ok(orderId.toString());
     }

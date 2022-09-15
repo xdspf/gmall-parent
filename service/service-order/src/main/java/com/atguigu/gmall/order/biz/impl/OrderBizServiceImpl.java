@@ -5,12 +5,16 @@ import com.atguigu.gmall.common.constant.SysRedisConst;
 import com.atguigu.gmall.common.execption.GmallException;
 import com.atguigu.gmall.common.result.Result;
 import com.atguigu.gmall.common.result.ResultCodeEnum;
+import com.atguigu.gmall.common.util.Jsons;
+import com.atguigu.gmall.constant.MqConst;
 import com.atguigu.gmall.feign.cart.CartFeignClient;
 import com.atguigu.gmall.feign.order.OrderFeignClient;
 import com.atguigu.gmall.feign.product.SkuProductFeignClient;
 import com.atguigu.gmall.feign.user.UserFeignClient;
 import com.atguigu.gmall.feign.ware.WareFeignClient;
 import com.atguigu.gmall.model.cart.CartInfo;
+import com.atguigu.gmall.model.enums.ProcessStatus;
+import com.atguigu.gmall.model.to.mq.OrderMsg;
 import com.atguigu.gmall.model.user.UserAddress;
 import com.atguigu.gmall.model.vo.order.CartInfoVo;
 import com.atguigu.gmall.model.vo.order.OrderConfirmDataVo;
@@ -18,16 +22,21 @@ import com.atguigu.gmall.model.vo.order.OrderSubmitVo;
 import com.atguigu.gmall.model.vo.user.UserAuthInfo;
 import com.atguigu.gmall.order.biz.OrderBizService;
 import com.atguigu.gmall.order.service.OrderInfoService;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -51,6 +60,9 @@ public class OrderBizServiceImpl implements OrderBizService {
 
     @Autowired
     OrderInfoService orderInfoService;
+
+    @Autowired
+    RabbitTemplate rabbitTemplate;
 
     @Override
     public OrderConfirmDataVo getConfirmData() {
@@ -149,12 +161,13 @@ public class OrderBizServiceImpl implements OrderBizService {
 
     }
 
+
     @Override
     public Long submitOrder(OrderSubmitVo submitVo, String tradeNo) {
 
         //1.验令牌
         boolean checkTradeNo = checkTradeNo(tradeNo);
-        if (!checkTradeNo){
+        if (!checkTradeNo) {
             throw new GmallException(ResultCodeEnum.TOKEN_INVAILD);
         }
 
@@ -164,16 +177,16 @@ public class OrderBizServiceImpl implements OrderBizService {
             Long skuId = infoVo.getSkuId();
             String stock = wareFeignClient.hasStock(skuId, infoVo.getSkuNum());
 
-            if (!"1".equals(stock)){
+            if (!"1".equals(stock)) {
                 noStockSkus.add(infoVo.getSkuName());
             }
 
         }
 
-        if (noStockSkus.size() > 0){
+        if (noStockSkus.size() > 0) {
             GmallException exception = new GmallException(ResultCodeEnum.ORDER_NO_STOCK);
             String skuNames = noStockSkus.stream().reduce((s1, s2) -> s1 + " " + s2).get();
-            throw new GmallException(ResultCodeEnum.ORDER_NO_STOCK.getMessage() + skuNames ,ResultCodeEnum.ORDER_NO_STOCK.getCode() );
+            throw new GmallException(ResultCodeEnum.ORDER_NO_STOCK.getMessage() + skuNames, ResultCodeEnum.ORDER_NO_STOCK.getCode());
         }
 
         //3.验价格
@@ -181,23 +194,51 @@ public class OrderBizServiceImpl implements OrderBizService {
         for (CartInfoVo infoVo : submitVo.getOrderDetailList()) {
 
             Result<BigDecimal> price = productFeignClient.getSku1010Price(infoVo.getSkuId());
-            if (!price.getData().equals(infoVo.getOrderPrice())){
+            if (!price.getData().equals(infoVo.getOrderPrice())) {
                 skuNames.add(infoVo.getSkuName());
             }
         }
 
-        if (skuNames.size() > 0){
+        if (skuNames.size() > 0) {
             String skuName = skuNames.stream().reduce((s1, s2) -> s1 + " " + s2).get();
-            throw new GmallException(ResultCodeEnum.ORDER_PRICE_CHANGED.getMessage() + "<br/>" + skuName ,ResultCodeEnum.ORDER_PRICE_CHANGED.getCode() );
+            throw new GmallException(ResultCodeEnum.ORDER_PRICE_CHANGED.getMessage() + "<br/>" + skuName, ResultCodeEnum.ORDER_PRICE_CHANGED.getCode());
         }
 
         //4.订单信息保存到数据库中
-        Long orderId =  orderInfoService.saveOrder(submitVo,tradeNo);
+        Long orderId = orderInfoService.saveOrder(submitVo, tradeNo);
 
         //5.清除购物车中选中的商品
         cartFeignClient.deleteChecked();
 
+        //45min不支付就要关闭。
+        //给MQ发一个消息。说明这个订单创建成功了。
+        //只要关单失败，消费者下次启动消息还在
+
+
+        //45min不支付就要关闭。
+//        ScheduledExecutorService pool = Executors.newScheduledThreadPool(10);
+//        pool.schedule(()->{
+//            closeOrder(orderId);
+//        },45,TimeUnit.MINUTES);
+//
         return orderId;
     }
+
+
+    @Override
+    public void closeOrder(Long orderId, Long userId) {
+        ProcessStatus closed = ProcessStatus.CLOSED;
+        List<ProcessStatus> expected = Arrays.asList(ProcessStatus.UNPAID, ProcessStatus.FINISHED);
+
+        //如果是未支付或者已结束才可以关闭订单 CAS
+        orderInfoService.changeOrderStatus(orderId, userId, closed, expected);
+
+
+    }
+
+//    @Scheduled(cron = "0 */5 * * * ?")
+//    public void closeOrder(Long orderId){
+//
+//    }
 
 }
