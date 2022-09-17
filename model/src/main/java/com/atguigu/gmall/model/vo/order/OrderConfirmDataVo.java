@@ -16,8 +16,7 @@ public class OrderConfirmDataVo {
 
     //购物车中需要结算的所有商品信息
     private List<CartInfoVo> detailArrayList;
-
-    private Integer totalNum;
+     private Integer totalNum;
     private BigDecimal totalAmount;
 
     //用户收货地址列表

@@ -35,8 +35,8 @@ public enum ResultCodeEnum {
 
     TOKEN_INVAILD(4000, "页面已过期请重新刷新"),
     ORDER_NO_STOCK(4001,"订单商品库存不足: " ),
-    ORDER_PRICE_CHANGED(4002,"订单中有商品价格发生变化，请重新刷新再试: ")
-    ;
+    ORDER_PRICE_CHANGED(4002,"订单中有商品价格发生变化，请重新刷新再试: "),
+    ORDER_EXPIRED(4003, "订单已过期，不能进行支付");
 
 
 
