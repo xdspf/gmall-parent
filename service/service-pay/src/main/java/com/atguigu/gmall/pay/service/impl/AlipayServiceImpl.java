@@ -9,10 +9,12 @@ import com.atguigu.gmall.common.result.Result;
 import com.atguigu.gmall.common.result.ResultCodeEnum;
 import com.atguigu.gmall.common.util.DateUtil;
 import com.atguigu.gmall.common.util.Jsons;
+import com.atguigu.gmall.constant.MqConst;
 import com.atguigu.gmall.feign.order.OrderFeignClient;
 import com.atguigu.gmall.model.order.OrderInfo;
 import com.atguigu.gmall.pay.config.AlipayProperties;
 import com.atguigu.gmall.pay.service.AlipayService;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +33,9 @@ public class AlipayServiceImpl implements AlipayService {
 
     @Autowired
     OrderFeignClient orderFeignClient;
+
+    @Autowired
+    RabbitTemplate rabbitTemplate;
 
     @Override
     public String getAlipayPageHtml(Long orderId) throws AlipayApiException {
@@ -84,5 +89,16 @@ public class AlipayServiceImpl implements AlipayService {
                         alipayProperties.getCharset(),
                         alipayProperties.getSignType());
         return v1;
+    }
+
+    @Override
+    public void sendPayedMsg(Map<String, String> param) {
+        //支付成功给 订单交换机发送一个消息；
+        rabbitTemplate.convertAndSend(
+                MqConst.EXCHANGE_ORDER_EVNT,
+                MqConst.RK_ORDER_PAYED,
+                Jsons.toStr(param));
+
+
     }
 }

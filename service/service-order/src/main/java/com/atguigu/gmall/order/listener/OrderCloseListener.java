@@ -5,6 +5,7 @@ import com.atguigu.gmall.common.util.Jsons;
 import com.atguigu.gmall.constant.MqConst;
 import com.atguigu.gmall.model.to.mq.OrderMsg;
 import com.atguigu.gmall.order.biz.OrderBizService;
+import com.atguigu.gmall.service.RabbitService;
 import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
@@ -26,11 +27,26 @@ public class OrderCloseListener {
      * 订单关闭监听器
      */
 
-    @Autowired
-    StringRedisTemplate redisTemplate;
+//    @Autowired
+//    StringRedisTemplate redisTemplate;
+//
+//    @Autowired
+//    OrderBizService orderBizService;
+//
+//    @Autowired
+//    RabbitService rabbitService;
 
-    @Autowired
+    StringRedisTemplate redisTemplate;
     OrderBizService orderBizService;
+    RabbitService rabbitService;
+
+    public OrderCloseListener(StringRedisTemplate redisTemplate,
+                              OrderBizService orderBizService,
+                              RabbitService rabbitService){
+        this.redisTemplate = redisTemplate;
+        this.orderBizService = orderBizService;
+        this.rabbitService = rabbitService;
+    }
 
 
     @RabbitListener(queues = MqConst.QUEUE_ORDER_DEAD)
@@ -48,14 +64,16 @@ public class OrderCloseListener {
             channel.basicAck(tag, false);
         } catch (Exception e) {
             log.error("订单关闭业务失败。消息：{}，失败原因：{}", orderMsg, e);
+            String uniqKey = SysRedisConst.MQ_RETRY + "order:" + orderMsg.getOrderId();
+            rabbitService.retryConsumMsg(10L,uniqKey,tag,channel);
 
-            Long aLong = redisTemplate.opsForValue().increment(SysRedisConst.MQ_RETRY + "order:" + orderMsg.getOrderId());
-            if (aLong <= 10) {
-                channel.basicNack(tag, false, true);
-            } else {
-                channel.basicNack(tag, false, false);
-                redisTemplate.delete(SysRedisConst.MQ_RETRY + "order:" + orderMsg.getOrderId());
-            }
+//            Long aLong = redisTemplate.opsForValue().increment(SysRedisConst.MQ_RETRY + "order:" + orderMsg.getOrderId());
+//            if (aLong <= 10) {
+//                channel.basicNack(tag, false, true);
+//            } else {
+//                channel.basicNack(tag, false, false);
+//                redisTemplate.delete(SysRedisConst.MQ_RETRY + "order:" + orderMsg.getOrderId());
+//            }
         }
 
     }

@@ -129,5 +129,22 @@ public class OrderEventMqConfiguration {
         return new Binding(MqConst.QUEUE_ORDER_DEAD, Binding.DestinationType.QUEUE, MqConst.EXCHANGE_ORDER_EVNT, MqConst.RK_ORDER_DEAD, null);
     }
 
+    /*
+        支付成功单队列
+     */
+    @Bean
+    public Queue payedQueue(){
+        return new Queue(MqConst.QUEUE_ORDER_PAYED, true, false, false);
+    }
+
+    /*
+    支付成功单队列和交换机的绑定
+
+     */
+    @Bean
+    public Binding payedQueueBinding(){
+        return new Binding(MqConst.QUEUE_ORDER_PAYED, Binding.DestinationType.QUEUE, MqConst.EXCHANGE_ORDER_EVNT,
+                MqConst.RK_ORDER_PAYED, null);
+    }
 
 }

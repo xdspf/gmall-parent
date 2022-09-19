@@ -20,8 +20,18 @@ public interface OrderInfoService extends IService<OrderInfo> {
      * 幂等修改订单状态
      * @param orderId
      * @param userId
-     * @param closed
+     * @param whileChange
      * @param expected
      */
-    void changeOrderStatus(Long orderId, Long userId, ProcessStatus closed, List<ProcessStatus> expected);
+    void changeOrderStatus(Long orderId, Long userId, ProcessStatus whileChange, List<ProcessStatus> expected);
+
+    OrderInfo getOrderInfoByOutTradeNoAndUserId(String outTradeNo, Long userId);
+
+    /**
+     * 查询订单数据
+     * @param orderId
+     * @param userId
+     * @return
+     */
+    OrderInfo getOrderInfoByOrderIdAndUserId(Long orderId, Long userId);
 }

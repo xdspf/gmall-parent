@@ -26,11 +26,18 @@ public class OrderTradeController {
             model.addAttribute("totalAmount",data.getTotalAmount());
             model.addAttribute("userAddressList",data.getUserAddressList());
             model.addAttribute("tradeNo",data.getTradeNo());
-
         }
-
         return "order/trade";
+    }
 
+    /**
+     * 订单列表页
+     * @return
+     */
+    @GetMapping("/myOrder.html")
+    public String myOrderPage(){
+
+        return "order/myOrder";
     }
 
 }

@@ -26,8 +26,7 @@ public class PayController {
      * @return
      */
     @GetMapping("/pay.html")
-    public String payPage(Model model,
-                          @RequestParam("orderId") Long orderId){
+    public String payPage(Model model, @RequestParam("orderId") Long orderId){
 
         //id,totalAmount
         Result<OrderInfo> orderInfo = orderFeignClient.getOrderInfo(orderId);
